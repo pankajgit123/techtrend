@@ -1,0 +1,193 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechTrend IT Consulting</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E3A8A',
+            secondary: '#60A5FA',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans text-gray-800">
+  <!-- Navbar -->
+  <nav class="bg-primary text-white p-4 sticky top-0 z-10">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="/" class="text-2xl font-bold">TechTrend IT</a>
+      <div class="space-x-4">
+        <a href="#home" class="hover:text-secondary">Home</a>
+        <a href="#clients" class="hover:text-secondary">Clients</a>
+        <a href="#about" class="hover:text-secondary">About Us</a>
+        <a href="#values" class="hover:text-secondary">Our Values</a>
+        <a href="#jobs" class="hover:text-secondary">Jobs</a>
+        <a href="#contact" class="hover:text-secondary">Contact Us</a>
+        <button id="lang-toggle" class="hover:text-secondary">Français</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Home Section -->
+  <section id="home" class="bg-gray-100 py-16">
+    <div class="container mx-auto text-center">
+      <h1 class="text-4xl font-bold mb-4" data-en="Welcome to TechTrend IT Consulting" data-fr="Bienvenue chez TechTrend IT Consulting">Welcome to TechTrend IT Consulting</h1>
+      <p class="text-lg mb-6" data-en="Empowering businesses with cutting-edge IT solutions." data-fr="Habiliter les entreprises avec des solutions informatiques de pointe.">Empowering businesses with cutting-edge IT solutions.</p>
+      <img src="https://images.unsplash.com/photo-1516321310764-8d8c9471c113?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="IT Consulting" class="mx-auto w-3/4 rounded-lg">
+    </div>
+  </section>
+
+  <!-- Clients Section -->
+  <section id="clients" class="py-16">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-8" data-en="Our Clients" data-fr="Nos Clients">Our Clients</h2>
+      <p class="text-lg mb-6" data-en="We partner with industry leaders to deliver exceptional IT services." data-fr="Nous collaborons avec des leaders de l'industrie pour fournir des services informatiques exceptionnels.">We partner with industry leaders to deliver exceptional IT services.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 bg-white shadow rounded">
+          <img src="https://images.unsplash.com/photo-1542744173-05336fccdfa8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Client 1" class="w-full h-32 object-cover rounded">
+          <p data-en="Client A" data-fr="Client A">Client A</p>
+        </div>
+        <div class="p-4 bg-white shadow rounded">
+          <img src="https://images.unsplash.com/photo-1542744094-3e1a6d95d6e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt "Client 2" class="w-full h-32 object-cover rounded">
+          <p data-en="Client B" data-fr="Client B">Client B</p>
+        </div>
+        <div class="p-4 bg-white shadow rounded">
+          <img src="https://images.unsplash.com/photo-1542744095-2916893e7e9d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Client 3" class="w-full h-32 object-cover rounded">
+          <p data-en="Client C" data-fr="Client C">Client C</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section id="about" class="bg-gray-100 py-16">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-8" data-en="About Us" data-fr="À Propos de Nous">About Us</h2>
+      <p class="text-lg mb-6" data-en="TechTrend IT Consulting is a leader in providing innovative IT solutions to businesses worldwide." data-fr="TechTrend IT Consulting est un leader dans la fourniture de solutions informatiques innovantes aux entreprises du monde entier.">TechTrend IT Consulting is a leader in providing innovative IT solutions to businesses worldwide.</p>
+      <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Team" class="mx-auto w-3/4 rounded-lg">
+    </div>
+  </section>
+
+  <!-- Our Values Section -->
+  <section id="values" class="py-16">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-8" data-en="Our Values" data-fr="Nos Valeurs">Our Values</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 bg-white shadow rounded">
+          <h3 class="text-xl font-semibold" data-en="Innovation" data-fr="Innovation">Innovation</h3>
+          <p data-en="We embrace cutting-edge technologies." data-fr="Nous adoptons des technologies de pointe.">We embrace cutting-edge technologies.</p>
+        </div>
+        <div class="p-4 bg-white shadow rounded">
+          <h3 class="text-xl font-semibold" data-en="Integrity" data-fr="Intégrité">Integrity</h3>
+          <p data-en="We uphold the highest ethical standards." data-fr="Nous respectons les normes éthiques les plus élevées.">We uphold the highest ethical standards.</p>
+        </div>
+        <div class="p-4 bg-white shadow rounded">
+          <h3 class="text-xl font-semibold" data-en="Collaboration" data-fr="Collaboration">Collaboration</h3>
+          <p data-en="We work together to achieve success." data-fr="Nous travaillons ensemble pour réussir.">We work together to achieve success.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Jobs Section -->
+  <section id="jobs" class="bg-gray-100 py-16">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-8" data-en="Current Jobs" data-fr="Emplois Actuels">Current Jobs</h2>
+      <p class="text-lg mb-6" data-en="Join our team of innovators!" data-fr="Rejoignez notre équipe d'innovateurs !">Join our team of innovators!</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-white shadow rounded">
+          <h3 class="text-xl font-semibold" data-en="Software Engineer" data-fr="Ingénieur Logiciel">Software Engineer</h3>
+          <p data-en="Develop cutting-edge solutions." data-fr="Développer des solutions de pointe.">Develop cutting-edge solutions.</p>
+          <a href="#contact" class="text-secondary hover:underline" data-en="Apply Now" data-fr="Postuler Maintenant">Apply Now</a>
+        </div>
+        <div class="p-4 bg-white shadow rounded">
+          <h3 class="text-xl font-semibold" data-en="IT Consultant" data-fr="Consultant IT">IT Consultant</h3>
+          <p data-en="Guide clients to success." data-fr="Guider les clients vers le succès.">Guide clients to success.</p>
+          <a href="#contact" class="text-secondary hover:underline" data-en="Apply Now" data-fr="Postuler Maintenant">Apply Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="py-16">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-8" data-en="Contact Us" data-fr="Contactez-Nous">Contact Us</h2>
+      <p class="text-lg mb-6" data-en="Get in touch with us for inquiries." data-fr="Contactez-nous pour toute question.">Get in touch with us for inquiries.</p>
+      <div class="max-w-md mx-auto">
+        <input type="text" placeholder="Name" class="w-full p-2 mb-4 border rounded" data-en-placeholder="Name" data-fr-placeholder="Nom">
+        <input type="email" placeholder="Email" class="w-full p-2 mb-4 border rounded" data-en-placeholder="Email" data-fr-placeholder="Email">
+        <textarea placeholder="Message" class="w-full p-2 mb-4 border rounded" data-en-placeholder="Message" data-fr-placeholder="Message"></textarea>
+        <button class="bg-secondary text-white p-2 rounded hover:bg-blue-500" data-en="Send" data-fr="Envoyer">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white p-4 text-center">
+    <p data-en="&copy; 2025 TechTrend IT Consulting. All rights reserved." data-fr="&copy; 2025 TechTrend IT Consulting. Tous droits réservés.">&copy; 2025 TechTrend IT Consulting. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const langToggle = document.getElementById('lang-toggle');
+    let currentLang = 'en';
+
+    langToggle.addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'fr' : 'en';
+      langToggle.textContent = currentLang === 'en' ? 'Français' : 'English';
+      document.querySelectorAll('[data-en]').forEach(element => {
+        element.textContent = element.getAttribute(`data-${currentLang}`);
+      });
+      document.querySelectorAll('input[data-en-placeholder], textarea[data-en-placeholder]').forEach(element => {
+        element.placeholder = element.getAttribute(`data-${currentLang}-placeholder`);
+      });
+    });
+  </script>
+</body>
+</html>
